@@ -1,0 +1,5 @@
+require("preconf.setup")
+require("preconf.remap")
+require("preconf.lazy_init")
+require("preconf.lsp")
+require("preconf.setup_plugins")
