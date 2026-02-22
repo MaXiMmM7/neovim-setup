@@ -18,10 +18,11 @@ return {
         "mtime",
       },
       view_options = {
-    -- Show files and directories that start with "."
+        -- Show files and directories that start with "."
         show_hidden = true,
       },
     }
-  )
+    )
+    vim.keymap.set("n", "<leader>-", "<cmd>Oil<cr>", { desc = "Open Oil file explorer" })
   end
 }

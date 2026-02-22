@@ -1,21 +1,13 @@
---vim.lsp.enable("clangd")
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(args)
-    --local opts = { buffer = args.buf }
-    local opts = { buffer = args.buf, silent = true }
-    -- Go to definitions, references, etc.
-    opts.desc = "Show LSP references"
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', 'gI', vim.lsp.buf.implementation, opts)
-    
-    -- Rename and Actions
-    vim.keymap.set('n', '<leader>lr', vim.lsp.buf.rename, { desc = "LSP Rename", buffer = args.buf })
-    vim.keymap.set({ 'n', 'v' }, '<leader>la', vim.lsp.buf.code_action, { desc = "LSP Code Action", buffer = args.buf })
-    
-    -- Hover and Signature
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('i', '<C-s>', vim.lsp.buf.signature_help, opts)
-  end,
-})
+vim.keymap.set("n", "<leader>D", "<cmd>FzfLua diagnostics_document<cr>", { desc = "LSP buffer diagnostic" });
+vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "See available code actions" }) -- see available code actions, in visual mode will apply to selection
+vim.keymap.set("n", "<leader>sr", vim.lsp.buf.rename, { desc = "Smart rename" })                             -- smart rename
+vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show line diagnostics" })              -- show diagnostics for line
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show documentation for what is under cursor" })        -- show documentation for what is under cursor
 
+vim.keymap.set("n", "[d", function()
+  vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = "Go to previous diagnostic" }) -- jump to previous diagnostic in buffer
+--
+vim.keymap.set("n", "]d", function()
+  vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = "Go to next diagnostic" }) -- jump to next diagnostic in buffer
