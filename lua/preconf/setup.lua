@@ -10,7 +10,7 @@ vim.opt.list = true
 vim.opt.listchars = "eol:$,tab:>-,trail:~,extends:>,precedes:<"
 
 vim.opt.tabstop = 4    -- tab spaces
-vim.opt.shiftwidth = 2 -- shift stpaces
+vim.opt.shiftwidth = 4 -- shift spaces
 
 -- backspace
 vim.opt.backspace = "indent,eol,start" -- allow backspace on indent, end of line or insert mode start position
