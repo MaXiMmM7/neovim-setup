@@ -10,4 +10,13 @@ vim.lsp.config("*", {
     capabilities = capabilities,
 })
 
+vim.lsp.config("clangd", {
+    cmd = {
+        "/usr/bin/clangd",
+        "--enable-config",
+        "--query-driver=/usr/bin/c++,/usr/bin/g++,/usr/bin/x86_64-linux-gnu-g++-*",
+    },
+    capabilities = capabilities,
+})
+
 require("oil").setup()

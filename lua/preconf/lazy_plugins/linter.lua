@@ -4,6 +4,28 @@ return {
   config = function()
     local lint = require("lint")
 
+    lint.linters.cppcheck.args = {
+      "--enable=warning,style,performance,information",
+      function()
+        if vim.bo.filetype == "cpp" then
+          return "--language=c++"
+        else
+          return "--language=c"
+        end
+      end,
+      "--suppress=missingIncludeSystem",
+      "--inline-suppr",
+      "--quiet",
+      function()
+        if vim.fn.isdirectory("build") == 1 then
+          return "--cppcheck-build-dir=build"
+        else
+          return nil
+        end
+      end,
+      "--template={file}:{line}:{column}: [{id}] {severity}: {message}",
+    }
+
     lint.linters_by_ft = {
       python = { "pylint" },
       cpp = { "cppcheck" },
