@@ -18,5 +18,3 @@ vim.lsp.config("clangd", {
     },
     capabilities = capabilities,
 })
-
-require("oil").setup()

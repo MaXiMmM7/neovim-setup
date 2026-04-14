@@ -4,6 +4,35 @@ return {
   config = function()
     local lint = require("lint")
 
+    -- xmllint can validate stdin, which keeps XML checks working for unsaved buffers.
+    lint.linters.xmllint = {
+      cmd = "xmllint",
+      stdin = true,
+      append_fname = false,
+      args = { "--noout", "-" },
+      stream = "stderr",
+      ignore_exitcode = true,
+      parser = function(output)
+        local diagnostics = {}
+
+        for _, line in ipairs(vim.split(output, "\n")) do
+          local lnum, message = line:match("^%-:(%d+): parser error : (.+)$")
+
+          if lnum and message then
+            table.insert(diagnostics, {
+              lnum = tonumber(lnum) - 1,
+              col = 0,
+              message = message,
+              severity = vim.diagnostic.severity.ERROR,
+              source = "xmllint",
+            })
+          end
+        end
+
+        return diagnostics
+      end,
+    }
+
     lint.linters.cppcheck.args = {
       "--enable=warning,style,performance,information",
       function()
@@ -31,7 +60,14 @@ return {
       cpp = { "cppcheck" },
       c = { "cppcheck" },
       go = { "golangci-lint" },
-      rust = { "cargo" }
+      rust = { "cargo" },
+      json = { "json_tool" },
+      yaml = { "yamllint" },
+      xml = { "xmllint" },
+      xsd = { "xmllint" },
+      xsl = { "xmllint" },
+      xslt = { "xmllint" },
+      svg = { "xmllint" },
     }
 
     local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
