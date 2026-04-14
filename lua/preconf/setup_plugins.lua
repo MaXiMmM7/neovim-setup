@@ -18,3 +18,23 @@ vim.lsp.config("clangd", {
     },
     capabilities = capabilities,
 })
+
+vim.lsp.config("yamlls", {
+    settings = {
+        yaml = {
+            -- GitLab CI uses !reference in sequence, mapping, and scalar contexts.
+            customTags = {
+                "!reference sequence",
+                "!reference mapping",
+                "!reference scalar",
+            },
+            schemas = {
+                [vim.fs.joinpath(vim.fn.stdpath("config"), "schemas", "gitlab-ci.json")] = {
+                    "/.gitlab-ci.yml",
+                    "**/.gitlab-ci.yml",
+                    "**/*.gitlab-ci.yml",
+                },
+            },
+        },
+    },
+})

@@ -4,6 +4,15 @@ return {
   config = function()
     local lint = require("lint")
 
+    -- Keep YAML validation strict, but drop the style-only long-line warning.
+    lint.linters.yamllint.args = {
+      "-d",
+      "{extends: default, rules: {line-length: disable}}",
+      "--format",
+      "parsable",
+      "-",
+    }
+
     -- xmllint can validate stdin, which keeps XML checks working for unsaved buffers.
     lint.linters.xmllint = {
       cmd = "xmllint",
