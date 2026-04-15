@@ -38,3 +38,17 @@ vim.lsp.config("yamlls", {
         },
     },
 })
+
+vim.lsp.config("neocmake", {
+    init_options = {
+        -- Use gersemi for formatting and keep neocmake focused on language features.
+        format = {
+            enable = false,
+        },
+        lint = {
+            enable = true,
+        },
+        scan_cmake_in_package = true,
+        semantic_token = false,
+    },
+})

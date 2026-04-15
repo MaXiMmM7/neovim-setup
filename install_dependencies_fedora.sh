@@ -9,6 +9,7 @@ export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 # - curl/wget/unzip/tar/gzip: download helpers for external tools and scripts
 # - fzf/ripgrep: fzf-lua picker backend and grep-based searching
 # - gcc/g++/make: compiler toolchain for Tree-sitter parser builds
+# - cmake: core CMake project tooling used alongside the CMake LSP/formatter
 # - clang-tools-extra/cppcheck: C and C++ LSP, formatting, and linting
 # - libxml2: provides xmllint for XML syntax validation
 # - python3/python3-pip: Python tooling and json.tool validation support
@@ -18,6 +19,7 @@ sudo dnf install -y \
   git curl wget unzip tar gzip \
   fzf ripgrep \
   gcc gcc-c++ make \
+  cmake \
   clang-tools-extra cppcheck \
   libxml2 \
   python3 python3-pip \
@@ -27,9 +29,10 @@ sudo dnf install -y \
 # Python tools used by the config:
 # - pylint: Python linting through nvim-lint
 # - black/isort: Python formatting through conform.nvim
+# - gersemi: CMake formatting through conform.nvim
 # - yamllint: YAML syntax validation through nvim-lint
 python3 -m pip install --user --upgrade pip
-python3 -m pip install --user pylint black isort yamllint
+python3 -m pip install --user pylint black isort yamllint gersemi
 
 # Node-based formatters used by conform.nvim for JavaScript.
 sudo npm install -g prettier prettierd

@@ -7,7 +7,7 @@ return {
     configs.setup({
       ensure_installed = {
         "c", "cpp", "go", "bash", "lua", "vim", "vimdoc", "elixir", "javascript", "html", "python", "typescript",
-        "markdown", "markdown_inline", "latex", "yaml"
+        "markdown", "markdown_inline", "latex", "yaml", "cmake"
       },
       sync_install = false,
       highlight = { enable = true },
@@ -16,7 +16,7 @@ return {
     -- MODIFY CONFIG
     configs.install({
       "c", "cpp", "go", "bash", "lua", "vim", "vimdoc", "elixir", "javascript", "html", "python", "typescript",
-      "markdown", "markdown_inline", "latex", "yaml"
+      "markdown", "markdown_inline", "latex", "yaml", "cmake"
     })
   end
 }

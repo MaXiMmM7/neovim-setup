@@ -18,6 +18,10 @@ For syntax validation and diagnostics, the config now uses both LSP and
 - `yaml` / `yml`: `yamlls` plus `yamllint`
 - `xml`: `lemminx` plus `xmllint`
 
+For CMake editing, the config uses:
+
+- `cmake`: `neocmake` for LSP/linting plus `gersemi` for formatting
+
 Useful keys already configured:
 
 - `<leader>l`: trigger linting for the current file
@@ -38,9 +42,11 @@ Useful keys already configured:
 | `clangd` | C/C++ LSP | apt / dnf | Yes |
 | `clang-format` | C/C++ formatting | apt / dnf | Yes |
 | `cppcheck` | C/C++ linting | apt / dnf | Yes |
+| `cmake` | CMake project tooling and local configure/build workflows | apt / dnf | Recommended for CMake |
 | `python3`, `python3-pip` | Python tooling and `json.tool` validation | apt / dnf | Yes |
 | `pylint` | Python linting | pip | Yes for Python |
 | `black`, `isort` | Python formatting | pip | Yes for Python |
+| `gersemi` | CMake formatting through conform.nvim | pip | Yes for CMake |
 | `yamllint` | YAML linting | pip | Yes for YAML |
 | `libxml2-utils` or `libxml2` | provides `xmllint` for XML linting | apt / dnf | Yes for XML |
 | `nodejs`, `npm` | Mason npm-based LSP servers and JS formatters | apt / dnf | Yes |
@@ -67,6 +73,10 @@ These are installed by Neovim through Mason, not by `apt` / `dnf` directly:
 Note: this config hardcodes `/usr/bin/clangd` for C/C++, so a system-installed
 `clangd` is still required even though Mason also tracks `clangd`.
 
+For CMake specifically, `neocmake` provides completions, navigation, hover,
+rename, and diagnostics, while `gersemi` is the primary formatter used by
+`<leader>f`.
+
 ## Ubuntu-Like Install Commands
 
 System packages:
@@ -77,6 +87,7 @@ sudo apt install -y \
   git curl wget unzip tar gzip \
   fzf ripgrep \
   build-essential \
+  cmake \
   clangd clang-format cppcheck \
   libxml2-utils \
   python3 python3-pip \
@@ -88,7 +99,7 @@ Python tools:
 
 ```bash
 python3 -m pip install --user --upgrade pip
-python3 -m pip install --user pylint black isort yamllint
+python3 -m pip install --user pylint black isort yamllint gersemi
 ```
 
 Node tools:
@@ -135,6 +146,7 @@ sudo dnf install -y \
   git curl wget unzip tar gzip \
   fzf ripgrep \
   gcc gcc-c++ make \
+  cmake \
   clang-tools-extra cppcheck \
   libxml2 \
   python3 python3-pip \
@@ -146,7 +158,7 @@ Python tools:
 
 ```bash
 python3 -m pip install --user --upgrade pip
-python3 -m pip install --user pylint black isort yamllint
+python3 -m pip install --user pylint black isort yamllint gersemi
 ```
 
 Node tools:
