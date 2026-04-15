@@ -20,6 +20,10 @@ return {
             view_options = {
                 -- Show files and directories that start with "."
                 show_hidden = true,
+                -- Keep dotfiles visible, but hide the synthetic parent entry.
+                is_always_hidden = function(name, _)
+                    return name == ".."
+                end,
             },
         }
         )
