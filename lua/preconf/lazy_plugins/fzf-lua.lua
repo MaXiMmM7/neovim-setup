@@ -19,8 +19,12 @@ return {
         vim.keymap.set("n", "<leader>gr", "<cmd>FzfLua grep<cr>", { desc = "Fuzzy grep project files in cwd" });
         vim.keymap.set("v", "\\gr", "<cmd>FzfLua grep_visual<cr>",
             { desc = "Fuzzy grep files under visual selection in cwd" });
-        vim.keymap.set("n", "<leader>grc", "<cmd>FzfLua lgrep_curbuf<cr>",
-            { desc = "Fuzzy live grep current buffer in cwd" });
+        vim.keymap.set("n", "<leader>cwgr", "<cmd>FzfLua grep_cWORD<cr>",
+            { desc = "Search cWORD under cursor" });
+        vim.keymap.set("v", "<\\cwgr", "<cmd>FzfLua grep_cWORD<cr>",
+            { desc = "Search cWORD under cursor in visual mode" });
+        vim.keymap.set("n", "<leader>cbgr", "<cmd>FzfLua grep_curbuf<cr>",
+            { desc = "Search in the current buffer" });
 
         -- LSP
         vim.keymap.set("n", "<leader>fr", "<cmd>FzfLua lsp_references<cr>", { desc = "Find LSP references" });
