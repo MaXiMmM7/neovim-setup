@@ -10,6 +10,7 @@ export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 # - fzf/ripgrep: fzf-lua picker backend and grep-based searching
 # - gcc/g++/make: compiler toolchain for Tree-sitter parser builds
 # - cmake: core CMake project tooling used alongside the CMake LSP/formatter
+# - jq: JSON formatting through conform.nvim
 # - clang-tools-extra/cppcheck: C and C++ LSP, formatting, and linting
 # - libxml2: provides xmllint for XML syntax validation
 # - python3/python3-pip: Python tooling and json.tool validation support
@@ -20,6 +21,7 @@ sudo dnf install -y \
   fzf ripgrep \
   gcc gcc-c++ make \
   cmake \
+  jq \
   clang-tools-extra cppcheck \
   libxml2 \
   python3 python3-pip \
@@ -30,9 +32,44 @@ sudo dnf install -y \
 # - pylint: Python linting through nvim-lint
 # - black/isort: Python formatting through conform.nvim
 # - gersemi: CMake formatting through conform.nvim
+# - mdformat/mdformat-gfm: Markdown formatting through conform.nvim
 # - yamllint: YAML syntax validation through nvim-lint
 python3 -m pip install --user --upgrade pip
-python3 -m pip install --user pylint black isort yamllint gersemi
+python3 -m pip install --user pylint black isort yamllint gersemi mdformat mdformat-gfm
+
+# yamlfmt is the YAML formatter used by conform.nvim. Install the upstream
+# static release binary because distro packages are inconsistent.
+if ! command -v yamlfmt >/dev/null 2>&1; then
+  tmpdir="$(mktemp -d)"
+  arch="$(uname -m)"
+  case "$arch" in
+    x86_64)
+      yamlfmt_arch="x86_64"
+      ;;
+    aarch64|arm64)
+      yamlfmt_arch="arm64"
+      ;;
+    *)
+      yamlfmt_arch=""
+      printf 'Unsupported architecture for yamlfmt auto-install: %s\n' "$arch"
+      ;;
+  esac
+
+  if [ -n "$yamlfmt_arch" ]; then
+    yamlfmt_version="$(python3 - <<'PY'
+import json, urllib.request
+with urllib.request.urlopen('https://api.github.com/repos/google/yamlfmt/releases/latest', timeout=20) as response:
+    print(json.load(response)['tag_name'])
+PY
+)"
+    yamlfmt_version_no_v="${yamlfmt_version#v}"
+    curl -fsSL "https://github.com/google/yamlfmt/releases/download/${yamlfmt_version}/yamlfmt_${yamlfmt_version_no_v}_Linux_${yamlfmt_arch}.tar.gz" -o "$tmpdir/yamlfmt.tar.gz"
+    tar -xzf "$tmpdir/yamlfmt.tar.gz" -C "$tmpdir"
+    install -m 0755 "$tmpdir/yamlfmt" "$HOME/.local/bin/yamlfmt"
+  fi
+
+  rm -rf "$tmpdir"
+fi
 
 # Node-based formatters used by conform.nvim for JavaScript.
 sudo npm install -g prettier prettierd

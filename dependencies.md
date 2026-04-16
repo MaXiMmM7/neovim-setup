@@ -22,8 +22,16 @@ For CMake editing, the config uses:
 
 - `cmake`: `neocmake` for LSP/linting plus `gersemi` for formatting
 
+For formatting, the config uses:
+
+- `json`: `jq`
+- `yaml` / `yml`: `yamlfmt`
+- `markdown` / `md`: `mdformat` plus `mdformat-gfm`
+- `xml`: `xmllint`
+
 Useful keys already configured:
 
+- `<leader>f`: format the current file or selected range
 - `<leader>l`: trigger linting for the current file
 - `<leader>d`: show diagnostics for the current line
 - `[d`: previous diagnostic
@@ -43,11 +51,14 @@ Useful keys already configured:
 | `clang-format` | C/C++ formatting | apt / dnf | Yes |
 | `cppcheck` | C/C++ linting | apt / dnf | Yes |
 | `cmake` | CMake project tooling and local configure/build workflows | apt / dnf | Recommended for CMake |
+| `jq` | JSON formatting through conform.nvim | apt / dnf | Yes for JSON |
 | `python3`, `python3-pip` | Python tooling and `json.tool` validation | apt / dnf | Yes |
 | `pylint` | Python linting | pip | Yes for Python |
 | `black`, `isort` | Python formatting | pip | Yes for Python |
 | `gersemi` | CMake formatting through conform.nvim | pip | Yes for CMake |
+| `mdformat`, `mdformat-gfm` | Markdown formatting through conform.nvim | pip | Yes for Markdown |
 | `yamllint` | YAML linting | pip | Yes for YAML |
+| `yamlfmt` | YAML formatting through conform.nvim | release binary | Yes for YAML |
 | `libxml2-utils` or `libxml2` | provides `xmllint` for XML linting | apt / dnf | Yes for XML |
 | `nodejs`, `npm` | Mason npm-based LSP servers and JS formatters | apt / dnf | Yes |
 | `prettier` or `prettierd` | JavaScript formatting | npm | Yes for JS |
@@ -88,6 +99,7 @@ sudo apt install -y \
   fzf ripgrep \
   build-essential \
   cmake \
+  jq \
   clangd clang-format cppcheck \
   libxml2-utils \
   python3 python3-pip \
@@ -99,7 +111,23 @@ Python tools:
 
 ```bash
 python3 -m pip install --user --upgrade pip
-python3 -m pip install --user pylint black isort yamllint gersemi
+python3 -m pip install --user pylint black isort yamllint gersemi mdformat mdformat-gfm
+```
+
+YAML formatter:
+
+```bash
+mkdir -p "$HOME/.local/bin"
+yamlfmt_version="$(python3 - <<'PY'
+import json, urllib.request
+with urllib.request.urlopen('https://api.github.com/repos/google/yamlfmt/releases/latest', timeout=20) as response:
+    print(json.load(response)['tag_name'])
+PY
+)"
+yamlfmt_version_no_v="${yamlfmt_version#v}"
+curl -fsSL "https://github.com/google/yamlfmt/releases/download/${yamlfmt_version}/yamlfmt_${yamlfmt_version_no_v}_Linux_x86_64.tar.gz" -o /tmp/yamlfmt.tar.gz
+tar -xzf /tmp/yamlfmt.tar.gz -C /tmp
+install -m 0755 /tmp/yamlfmt "$HOME/.local/bin/yamlfmt"
 ```
 
 Node tools:
@@ -147,6 +175,7 @@ sudo dnf install -y \
   fzf ripgrep \
   gcc gcc-c++ make \
   cmake \
+  jq \
   clang-tools-extra cppcheck \
   libxml2 \
   python3 python3-pip \
@@ -158,7 +187,23 @@ Python tools:
 
 ```bash
 python3 -m pip install --user --upgrade pip
-python3 -m pip install --user pylint black isort yamllint gersemi
+python3 -m pip install --user pylint black isort yamllint gersemi mdformat mdformat-gfm
+```
+
+YAML formatter:
+
+```bash
+mkdir -p "$HOME/.local/bin"
+yamlfmt_version="$(python3 - <<'PY'
+import json, urllib.request
+with urllib.request.urlopen('https://api.github.com/repos/google/yamlfmt/releases/latest', timeout=20) as response:
+    print(json.load(response)['tag_name'])
+PY
+)"
+yamlfmt_version_no_v="${yamlfmt_version#v}"
+curl -fsSL "https://github.com/google/yamlfmt/releases/download/${yamlfmt_version}/yamlfmt_${yamlfmt_version_no_v}_Linux_x86_64.tar.gz" -o /tmp/yamlfmt.tar.gz
+tar -xzf /tmp/yamlfmt.tar.gz -C /tmp
+install -m 0755 /tmp/yamlfmt "$HOME/.local/bin/yamlfmt"
 ```
 
 Node tools:
