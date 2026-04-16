@@ -1,13 +1,14 @@
 # Neovim Dependencies
 
 This document lists the external tools used by the Neovim config in this
-directory, what each tool is used for, and how to install them on Ubuntu-like
-and Fedora-like systems.
+directory, what each tool is used for, and how to install them on Ubuntu-like,
+Fedora-like, and Oracle Linux 9 systems.
 
 Use the distro-specific scripts in this directory for a mostly automatic setup:
 
 - `./install_dependencies_ubuntu.sh`
 - `./install_dependencies_fedora.sh`
+- `./install_dependencies_oracle_linux_9.sh`
 
 ## Validation In Neovim
 
@@ -177,6 +178,86 @@ sudo dnf install -y \
   cmake \
   jq \
   clang-tools-extra cppcheck \
+  libxml2 \
+  python3 python3-pip \
+  nodejs npm \
+  cargo
+```
+
+Python tools:
+
+```bash
+python3 -m pip install --user --upgrade pip
+python3 -m pip install --user pylint black isort yamllint gersemi mdformat mdformat-gfm
+```
+
+YAML formatter:
+
+```bash
+mkdir -p "$HOME/.local/bin"
+yamlfmt_version="$(python3 - <<'PY'
+import json, urllib.request
+with urllib.request.urlopen('https://api.github.com/repos/google/yamlfmt/releases/latest', timeout=20) as response:
+    print(json.load(response)['tag_name'])
+PY
+)"
+yamlfmt_version_no_v="${yamlfmt_version#v}"
+curl -fsSL "https://github.com/google/yamlfmt/releases/download/${yamlfmt_version}/yamlfmt_${yamlfmt_version_no_v}_Linux_x86_64.tar.gz" -o /tmp/yamlfmt.tar.gz
+tar -xzf /tmp/yamlfmt.tar.gz -C /tmp
+install -m 0755 /tmp/yamlfmt "$HOME/.local/bin/yamlfmt"
+```
+
+Node tools:
+
+```bash
+sudo npm install -g prettier prettierd
+```
+
+Rust tools:
+
+```bash
+cargo install --locked stylua
+```
+
+Optional Rust formatter when `rustup` is available:
+
+```bash
+rustup component add rustfmt
+```
+
+Go linter:
+
+```bash
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
+  | sh -s -- -b "$HOME/.local/bin" latest
+```
+
+Neovim-managed tools:
+
+```bash
+nvim --headless \
+  "+Lazy! sync" \
+  "+MasonInstall clangd neocmake lua_ls ty postgres_lsp jsonls yamlls lemminx" \
+  "+TSUpdate" \
+  "+qa"
+```
+
+## Oracle Linux 9 Install Commands
+
+Oracle Linux 9 needs Oracle's EPEL compatibility package first so packages like
+`fzf`, `ripgrep`, and `cppcheck` are available through `dnf`.
+
+System packages:
+
+```bash
+sudo dnf install -y oracle-epel-release-el9
+sudo dnf install -y \
+  git curl wget unzip tar gzip \
+  fzf ripgrep \
+  gcc gcc-c++ make \
+  cmake \
+  jq \
+  clang-tools-extra clang-format cppcheck \
   libxml2 \
   python3 python3-pip \
   nodejs npm \
