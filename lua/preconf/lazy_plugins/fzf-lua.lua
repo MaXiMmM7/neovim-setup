@@ -10,7 +10,11 @@ return {
     opts = {},
     ---@diagnostic enable: missing-fields
     config = function()
-        require('fzf-lua')
+        require('fzf-lua').setup({
+            grep = {
+                hidden = true,
+            },
+        })
         -- Find files & buffers
         vim.keymap.set("n", "<leader>ff", "<cmd>FzfLua files<cr>", { desc = "Fuzzy find files in cwd" });
         vim.keymap.set("n", "<leader>fb", "<cmd>FzfLua buffers<cr>", { desc = "Fuzzy find buffers in cwd" });
