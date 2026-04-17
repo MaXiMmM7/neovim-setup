@@ -11,10 +11,11 @@ export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 # - gcc/g++/make: compiler toolchain for Tree-sitter parser builds
 # - cmake: core CMake project tooling used alongside the CMake LSP/formatter
 # - jq: JSON formatting through conform.nvim
+# - shellcheck/shfmt: shell linting and formatting through nvim-lint/conform.nvim
 # - clang-tools-extra/cppcheck: C and C++ LSP, formatting, and linting
 # - libxml2: provides xmllint for XML syntax validation
 # - python3/python3-pip: Python tooling and json.tool validation support
-# - nodejs/npm: Mason npm-based language servers and prettier/prettierd
+# - nodejs/npm: Mason npm-based language servers (including bashls) and prettier/prettierd
 # - cargo: Rust linting entrypoint and Rust-based formatter installation
 sudo dnf install -y \
   git curl wget unzip tar gzip \
@@ -22,6 +23,7 @@ sudo dnf install -y \
   gcc gcc-c++ make \
   cmake \
   jq \
+  shellcheck shfmt \
   clang-tools-extra cppcheck \
   libxml2 \
   python3 python3-pip \
@@ -102,7 +104,7 @@ fi
 if command -v nvim >/dev/null 2>&1; then
   nvim --headless \
     "+Lazy! sync" \
-    "+MasonInstall clangd neocmake lua_ls ty postgres_lsp jsonls yamlls lemminx" \
+    "+MasonInstall clangd neocmake lua_ls ty postgres_lsp jsonls yamlls lemminx bashls" \
     "+TSUpdate" \
     "+qa"
 else

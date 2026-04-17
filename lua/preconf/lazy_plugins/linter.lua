@@ -70,6 +70,8 @@ return {
       c = { "cppcheck" },
       go = { "golangci-lint" },
       rust = { "cargo" },
+      sh = { "shellcheck" },
+      bash = { "shellcheck" },
       json = { "json_tool" },
       yaml = { "yamllint" },
       xml = { "xmllint" },

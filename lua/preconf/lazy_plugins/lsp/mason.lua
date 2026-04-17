@@ -10,6 +10,7 @@ return {
             "jsonls",
             "yamlls",
             "lemminx",
+            "bashls",
         },
         -- zuban and ty for python
     },

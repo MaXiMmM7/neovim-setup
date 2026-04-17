@@ -15,10 +15,11 @@ sudo dnf install -y oracle-epel-release-el9
 # - gcc/g++/make: compiler toolchain for Tree-sitter parser builds
 # - cmake: core CMake project tooling used alongside the CMake LSP/formatter
 # - jq: JSON formatting through conform.nvim
+# - shellcheck: shell linting through nvim-lint
 # - clang-tools-extra/clang-format/cppcheck: C and C++ LSP, formatting, and linting
 # - libxml2: provides xmllint for XML syntax validation and formatting
 # - python3/python3-pip: Python tooling and json.tool validation support
-# - nodejs/npm: Mason npm-based language servers and prettier/prettierd
+# - nodejs/npm: Mason npm-based language servers (including bashls) and prettier/prettierd
 # - cargo: Rust linting entrypoint and Rust-based formatter installation
 sudo dnf install -y \
   git curl wget unzip tar gzip \
@@ -26,6 +27,7 @@ sudo dnf install -y \
   gcc gcc-c++ make \
   cmake \
   jq \
+  shellcheck \
   clang-tools-extra clang-format cppcheck \
   libxml2 \
   python3 python3-pip \
@@ -75,6 +77,38 @@ PY
   rm -rf "$tmpdir"
 fi
 
+# shfmt is the shell formatter used by conform.nvim. Install the upstream
+# release binary because it is not consistently packaged for Oracle Linux 9.
+if ! command -v shfmt >/dev/null 2>&1; then
+  tmpdir="$(mktemp -d)"
+  arch="$(uname -m)"
+  case "$arch" in
+    x86_64)
+      shfmt_arch="amd64"
+      ;;
+    aarch64|arm64)
+      shfmt_arch="arm64"
+      ;;
+    *)
+      shfmt_arch=""
+      printf 'Unsupported architecture for shfmt auto-install: %s\n' "$arch"
+      ;;
+  esac
+
+  if [ -n "$shfmt_arch" ]; then
+    shfmt_version="$(python3 - <<'PY'
+import json, urllib.request
+with urllib.request.urlopen('https://api.github.com/repos/mvdan/sh/releases/latest', timeout=20) as response:
+    print(json.load(response)['tag_name'])
+PY
+)"
+    curl -fsSL "https://github.com/mvdan/sh/releases/download/${shfmt_version}/shfmt_${shfmt_version}_linux_${shfmt_arch}" -o "$tmpdir/shfmt"
+    install -m 0755 "$tmpdir/shfmt" "$HOME/.local/bin/shfmt"
+  fi
+
+  rm -rf "$tmpdir"
+fi
+
 # Node-based formatters used by conform.nvim for JavaScript.
 sudo npm install -g prettier prettierd
 
@@ -106,7 +140,7 @@ fi
 if command -v nvim >/dev/null 2>&1; then
   nvim --headless \
     "+Lazy! sync" \
-    "+MasonInstall clangd neocmake lua_ls ty postgres_lsp jsonls yamlls lemminx" \
+    "+MasonInstall clangd neocmake lua_ls ty postgres_lsp jsonls yamlls lemminx bashls" \
     "+TSUpdate" \
     "+qa"
 else
