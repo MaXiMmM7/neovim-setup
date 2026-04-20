@@ -18,7 +18,7 @@ return {
         -- Find files & buffers
         vim.keymap.set("n", "<leader>ff", "<cmd>FzfLua files<cr>", { desc = "Fuzzy find files in cwd" });
         vim.keymap.set("n", "<leader>fb", "<cmd>FzfLua buffers<cr>", { desc = "Fuzzy find buffers in cwd" });
-        vim.keymap.set("n", "<leader>fp", "<cmd>FzfLua resume<cr>", { desc = "Resume last FzfLua picker" });
+        vim.keymap.set("n", "<leader>f-", "<cmd>FzfLua resume<cr>", { desc = "Resume last FzfLua picker" });
 
         -- grep
         vim.keymap.set("n", "<leader>gr", "<cmd>FzfLua grep<cr>", { desc = "Fuzzy grep project files in cwd" });
