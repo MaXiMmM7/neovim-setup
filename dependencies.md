@@ -47,33 +47,53 @@ Useful keys already configured:
 
 | Dependency | Used For | Install Method | Required |
 | --- | --- | --- | --- |
+| Neovim 0.12+ | current `nvim-treesitter` `main` branch and this config | upstream release on Ubuntu 24.04 | Yes |
 | `git` | `lazy.nvim` bootstrap and `gitsigns` features | apt / dnf | Yes |
-| `curl`, `wget`, `unzip`, `tar`, `gzip` | download helpers and install scripts | apt / dnf | Yes |
+| `curl`, `wget`, `unzip`, `tar`, `gzip`, `ca-certificates` | download helpers and install scripts | apt / dnf | Yes |
 | `fzf` | `fzf-lua` picker backend | apt / dnf | Yes |
 | `ripgrep` | `fzf-lua` grep/search commands | apt / dnf | Yes |
+| `fd` / `fd-find` | fast file finding for editor tooling | apt / dnf | Recommended |
 | C/C++ build toolchain | compile Tree-sitter parsers, build native tooling | apt / dnf | Yes |
+| `pkg-config` | native build helper used by some compiled tools | apt / dnf | Recommended |
+| `tree-sitter` CLI 0.26.1+ | install and generate Tree-sitter parsers | upstream release on Ubuntu 24.04 | Yes |
 | `clangd` | C/C++ LSP | apt / dnf | Yes |
 | `clang-format` | C/C++ formatting | apt / dnf | Yes |
 | `cppcheck` | C/C++ linting | apt / dnf | Yes |
 | `cmake` | CMake project tooling and local configure/build workflows | apt / dnf | Recommended for CMake |
 | `jq` | JSON formatting through conform.nvim | apt / dnf | Yes for JSON |
-| `python3`, `python3-pip` | Python tooling and `json.tool` validation | apt / dnf | Yes |
-| `pylint` | Python linting | pip | Yes for Python |
-| `black`, `isort` | Python formatting | pip | Yes for Python |
-| `gersemi` | CMake formatting through conform.nvim | pip | Yes for CMake |
-| `mdformat`, `mdformat-gfm` | Markdown formatting through conform.nvim | pip | Yes for Markdown |
+| `python3`, `python3-pip`, `python3-venv`, `python3-pynvim`, `pipx` | Python tooling, Neovim Python client, isolated CLI installs, and `json.tool` validation | apt / dnf | Yes |
+| `pylint` | Python linting | pipx / pip | Yes for Python |
+| `black`, `isort` | Python formatting | pipx / pip | Yes for Python |
+| `gersemi` | CMake formatting through conform.nvim | pipx / pip | Yes for CMake |
+| `mdformat`, `mdformat-gfm` | Markdown formatting through conform.nvim | pipx / pip | Yes for Markdown |
 | `shellcheck` | Shell linting through nvim-lint | apt / dnf | Yes for shell |
 | `shfmt` | Shell formatting through conform.nvim | apt / dnf or release binary | Yes for shell |
-| `yamllint` | YAML linting | pip | Yes for YAML |
+| `yamllint` | YAML linting | pipx / pip | Yes for YAML |
 | `yamlfmt` | YAML formatting through conform.nvim | release binary | Yes for YAML |
 | `libxml2-utils` or `libxml2` | provides `xmllint` for XML linting | apt / dnf | Yes for XML |
 | `nodejs`, `npm` | Mason npm-based LSP servers and JS formatters | apt / dnf | Yes |
 | `prettier` or `prettierd` | JavaScript formatting | npm | Yes for JS |
-| `cargo` | Rust linting entrypoint and Rust-based tool installs | apt / dnf | Yes |
+| `go` / `golang-go` | Go toolchain used by Go projects and Go linting workflows | apt / dnf | Yes for Go |
+| `cargo` | Rust linting entrypoint and Rust tooling | apt / dnf | Yes |
 | `rustfmt` | Rust formatting | rustup or distro package | Yes for Rust |
-| `stylua` | Lua formatting | cargo | Yes for Lua |
+| `stylua` | Lua formatting | release binary / cargo | Yes for Lua |
 | `golangci-lint` | Go linting | upstream install script | Yes for Go |
+| `wl-clipboard`, `xclip` | clipboard integration on Wayland and X11 | apt / dnf | Recommended |
 | Nerd Font | icons in statusline, bufferline, file pickers, markdown render | manual | Recommended |
+
+Ubuntu 24.04 notes:
+
+- Ubuntu 24.04 provides `neovim` 0.9.5, but current `nvim-treesitter` `main`
+  requires Neovim 0.12+. The Ubuntu script installs the latest upstream Neovim
+  release into `~/.local/opt/nvim` and symlinks `~/.local/bin/nvim` when needed.
+- Ubuntu 24.04 provides `tree-sitter-cli` 0.20.x, but current
+  `nvim-treesitter` `main` requires `tree-sitter` 0.26.1+. The Ubuntu script
+  installs the latest upstream `tree-sitter` binary into `~/.local/bin` when
+  needed.
+- Ubuntu names the `fd` binary `fdfind`; the Ubuntu script creates a local
+  `~/.local/bin/fd` symlink when needed.
+- Ubuntu 24.04 blocks direct global/user `pip` installs in many cases, so the
+  Ubuntu script installs Python CLI tools with `pipx`.
 
 ## Mason-Managed LSP Servers
 
@@ -105,25 +125,54 @@ System packages:
 
 ```bash
 sudo apt update
+sudo apt install -y software-properties-common ca-certificates
+sudo add-apt-repository -y universe
+sudo apt update
 sudo apt install -y \
-  git curl wget unzip tar gzip \
-  fzf ripgrep \
-  build-essential \
+  git curl wget unzip tar gzip ca-certificates \
+  fzf ripgrep fd-find \
+  build-essential pkg-config \
+  tree-sitter-cli \
   cmake \
   jq \
   shellcheck shfmt \
   clangd clang-format cppcheck \
   libxml2-utils \
-  python3 python3-pip \
+  python3 python3-pip python3-venv python3-pynvim pipx \
   nodejs npm \
-  cargo
+  cargo rustfmt \
+  golang-go \
+  wl-clipboard xclip
+```
+
+Ubuntu 24.04 version-sensitive tools:
+
+```bash
+mkdir -p "$HOME/.local/bin" "$HOME/.local/opt"
+
+# Tree-sitter CLI, x86_64 example. Use tree-sitter-linux-arm64.gz on arm64.
+curl -fsSL https://github.com/tree-sitter/tree-sitter/releases/latest/download/tree-sitter-linux-x64.gz -o /tmp/tree-sitter.gz
+gunzip -c /tmp/tree-sitter.gz > /tmp/tree-sitter
+install -m 0755 /tmp/tree-sitter "$HOME/.local/bin/tree-sitter"
+
+# Neovim, x86_64 example. Use nvim-linux-arm64.tar.gz on arm64.
+curl -fsSL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz -o /tmp/nvim.tar.gz
+tar -xzf /tmp/nvim.tar.gz -C /tmp
+rm -rf "$HOME/.local/opt/nvim"
+mv /tmp/nvim-linux-x86_64 "$HOME/.local/opt/nvim"
+ln -sfn "$HOME/.local/opt/nvim/bin/nvim" "$HOME/.local/bin/nvim"
 ```
 
 Python tools:
 
 ```bash
-python3 -m pip install --user --upgrade pip
-python3 -m pip install --user pylint black isort yamllint gersemi mdformat mdformat-gfm
+pipx install pylint
+pipx install black
+pipx install isort
+pipx install yamllint
+pipx install gersemi
+pipx install mdformat
+pipx inject mdformat mdformat-gfm
 ```
 
 YAML formatter:
@@ -148,13 +197,16 @@ Node tools:
 sudo npm install -g prettier prettierd
 ```
 
-Rust tools:
+Lua formatter:
 
 ```bash
-cargo install --locked stylua
+# x86_64 example. Use stylua-linux-aarch64.zip on arm64.
+curl -fsSL https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux-x86_64.zip -o /tmp/stylua.zip
+unzip -q /tmp/stylua.zip -d /tmp/stylua
+install -m 0755 /tmp/stylua/stylua "$HOME/.local/bin/stylua"
 ```
 
-Optional Rust formatter when `rustup` is available:
+Rust formatter when `rustup` is available and shadows the distro `rustfmt`:
 
 ```bash
 rustup component add rustfmt
@@ -173,7 +225,8 @@ Neovim-managed tools:
 nvim --headless \
   "+Lazy! sync" \
   "+MasonInstall clangd neocmake lua_ls ty postgres_lsp jsonls yamlls lemminx bashls" \
-  "+TSUpdate" \
+  "+lua require('nvim-treesitter').install({ 'c', 'cpp', 'go', 'bash', 'lua', 'vim', 'vimdoc', 'elixir', 'javascript', 'html', 'python', 'typescript', 'markdown', 'markdown_inline', 'latex', 'yaml', 'cmake' }):wait(300000)" \
+  "+lua require('nvim-treesitter').update():wait(300000)" \
   "+qa"
 ```
 
