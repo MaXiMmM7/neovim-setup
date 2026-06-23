@@ -10,6 +10,13 @@ Use the distro-specific scripts in this directory for a mostly automatic setup:
 - `./install_dependencies_fedora.sh`
 - `./install_dependencies_oracle_linux_9.sh`
 
+Use the matching font scripts when Neovim icons render as boxes, question marks,
+or shifted glyphs:
+
+- `./install_fonts_ubuntu.sh`
+- `./install_fonts_fedora.sh`
+- `./install_fonts_oracle_linux_9.sh`
+
 ## Validation In Neovim
 
 For syntax validation and diagnostics, the config now uses both LSP and
@@ -79,7 +86,8 @@ Useful keys already configured:
 | `stylua` | Lua formatting | release binary / cargo | Yes for Lua |
 | `golangci-lint` | Go linting | upstream install script | Yes for Go |
 | `wl-clipboard`, `xclip` | clipboard integration on Wayland and X11 | apt / dnf | Recommended |
-| Nerd Font | icons in statusline, bufferline, file pickers, markdown render | manual | Recommended |
+| `fontconfig`, emoji fonts | font discovery, cache refresh, and emoji fallback | apt / dnf | Recommended |
+| Nerd Font | icons in statusline, bufferline, file pickers, markdown render | font scripts | Recommended |
 
 Ubuntu 24.04 notes:
 
@@ -402,14 +410,37 @@ nvim --headless \
   "+qa"
 ```
 
-## Manual Step: Nerd Font
+## Nerd Font And Icon Setup
 
-This config uses icon-heavy plugins, so a Nerd Font is recommended.
+This config uses icon-heavy plugins, so a Nerd Font is recommended. The font
+scripts install `IntelOneMono` from Nerd Fonts by default plus
+`NerdFontsSymbolsOnly` as an icon fallback, refresh `fontconfig`, and print the
+detected font matches.
 
-Examples:
+Run the script for your OS:
 
-- IntelOneMono Nerd Font
-- JetBrainsMono Nerd Font
+```bash
+./install_fonts_ubuntu.sh
+./install_fonts_fedora.sh
+./install_fonts_oracle_linux_9.sh
+```
 
-Install the font manually through your desktop environment or preferred font
-management tool, then configure your terminal to use it.
+Then set your terminal font to:
+
+```text
+IntelOneMono Nerd Font Mono
+```
+
+Restart already-open terminals after changing the terminal font.
+
+To install a different Nerd Font from the upstream release assets:
+
+```bash
+NERD_FONT_NAME=JetBrainsMono ./install_fonts_ubuntu.sh
+NERD_FONT_NAME=CascadiaMono ./install_fonts_fedora.sh
+NERD_FONT_NAME=Hack ./install_fonts_oracle_linux_9.sh
+```
+
+The scripts install fonts into `~/.local/share/fonts/NerdFonts`, so no root
+font installation is required. They still use the OS package manager for
+`fontconfig`, download helpers, and emoji fallback fonts.

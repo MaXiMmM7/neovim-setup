@@ -267,6 +267,4 @@ else
   printf 'nvim not found; skipping Lazy/Mason/Tree-sitter setup.\n'
 fi
 
-# This config looks best with a Nerd Font, but font installation is left manual
-# because it depends on the terminal emulator and desktop environment.
-printf 'Done. If icons look wrong, install a Nerd Font and select it in your terminal.\n'
+printf 'Done. For Neovim icons, run ./install_fonts_ubuntu.sh and select IntelOneMono Nerd Font Mono in your terminal.\n'
